@@ -45,14 +45,8 @@ export function setupKeyboardControls(player, movementVector) {
   });
 }
 export function setupGamepadControls(player, movementVector) {
-  // Log all gamepad button presses and releases to identify D-pad mappings
-  onGamepadButtonDown((btn) => {
-    console.log(`Button ${btn} pressed`);
-  });
+  console.log("setting up gamepad controls");
 
-  onGamepadButtonRelease((btn) => {
-    console.log(`Button ${btn} released`);
-  });
   // Handle gamepad Connection
   onGamepadConnect((gamepad) => {
     console.log(`Gamepad connected: ${gamepad.index}`);
@@ -61,7 +55,16 @@ export function setupGamepadControls(player, movementVector) {
   onGamepadDisconnect((gamepad) => {
     console.log(`Gamepad disconnected: ${gamepad.index}`);
   });
+  /*
+  // Log all gamepad button presses and releases to identify D-pad mappings
+  onGamepadButtonDown((btn) => {
+    console.log(`Button ${btn} pressed`);
+  });
 
+  onGamepadButtonRelease((btn) => {
+    console.log(`Button ${btn} released`);
+  });
+*/
   onGamepadButtonDown("dpad-left", () => {
     movementVector.x = -1;
     player.dir = vec2(-1, 0);

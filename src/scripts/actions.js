@@ -12,9 +12,20 @@ function spawnKaboom(p) {
   });
 }
 
-export function handleAction(player, action) {
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function handleAction(player, action) {
   switch (action) {
     case "fireblast":
+      console.log("spawning kaboom");
       spawnKaboom(player.pos.add(player.dir.scale(48)));
+      break;
+    case "sword":
+      player.attacking = true;
+      await wait(200);
+      player.attacking = false;
+      break;
   }
 }

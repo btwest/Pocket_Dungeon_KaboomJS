@@ -42,6 +42,102 @@ export function loadAssets() {
       anims: { walkup: { from: 0, to: 1, speed: 6 } },
     },
   });
+  /*I
+  loadSpriteAtlas("assets/link_slash_side.png", {
+    "link-slash-side": {
+      x: 0,
+      y: 0,
+      width: 96,
+      height: 48,
+      sliceX: 2,
+      sliceY: 1,
+      anims: { sideslash: { from: 0, to: 1, speed: 6 } },
+    },
+  });
+  
+  loadSpriteAtlas("assets/link_slash_up.png", {
+    "link-slash-up": {
+      x: 0,
+      y: 0,
+      width: 96,
+      height: 48,
+      sliceX: 2,
+      sliceY: 1,
+      anims: { upslash: { from: 0, to: 1, speed: 6 }, anchor: (0, 1) },
+      anchor: (0, 0),
+    },
+  });
+
+  loadSpriteAtlas("assets/link_slash_down.png", {
+    "link-slash-down": {
+      x: 0,
+      y: 0,
+      width: 96,
+      height: 48,
+      sliceX: 2,
+      sliceY: 1,
+      anims: { downslash: { from: 0, to: 1, speed: 6 } },
+    },
+  });*/
+
+  loadSpriteAtlas("assets/link_slash_up_centered.png", {
+    "link-slash-up": {
+      x: 0,
+      y: 0,
+      width: 432,
+      height: 144,
+      sliceX: 3,
+      sliceY: 1,
+      anims: {
+        upslash: {
+          from: 0,
+          to: 2,
+          speed: 15,
+          loop: false,
+        },
+      },
+    },
+  });
+
+  loadSpriteAtlas("assets/link_slash_down_centered.png", {
+    "link-slash-down": {
+      x: 0,
+      y: 0,
+      width: 432,
+      height: 144,
+      sliceX: 3,
+      sliceY: 1,
+      anims: {
+        downslash: {
+          from: 0,
+          to: 2,
+          speed: 15,
+
+          loop: false,
+        },
+      },
+      anchor: "topright",
+    },
+  });
+
+  loadSpriteAtlas("assets/link_slash_side_centered.png", {
+    "link-slash-side": {
+      x: 0,
+      y: 0,
+      width: 432,
+      height: 144,
+      sliceX: 3,
+      sliceY: 1,
+      anims: {
+        sideslash: {
+          from: 0,
+          to: 2,
+          speed: 15,
+          loop: false,
+        },
+      },
+    },
+  });
 
   // Load Environment Sprites
   // Load Walls

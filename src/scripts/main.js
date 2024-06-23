@@ -78,31 +78,12 @@ scene("game", async ({ level, score, maps }) => {
 
   // Update movement continuously in the game loop
   onUpdate(() => {
-    updatePlayer(player, movementVector);
-    updateAnimations(player, movementVector);
+    updatePlayer(player, movementVector, player.attacking);
+    updateAnimations(player, movementVector, player.attacking);
   });
 
   // handle Collisions
   handleCollisions(player, scoreLabel, maps, level);
-
-  // Function to spawn an explosion effect
-  function spawnKaboom(p) {
-    const obj = add([
-      sprite("kaboom"),
-      pos(p),
-      "kaboom",
-      area(),
-      body({ isStatic: true }),
-    ]);
-    wait(1, () => {
-      destroy(obj);
-    });
-  }
-
-  // Define action for the space key (spawn explosion)
-  onKeyPress("space", () => {
-    spawnKaboom(player.pos.add(player.dir.scale(48)));
-  });
 
   // Update slicer enemies' movement
   onUpdate("slicer", (s) => {
