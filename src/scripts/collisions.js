@@ -7,9 +7,43 @@ import { updatePlayer } from "./player.js";
 
 export function handleCollisions(player, scoreLabel, maps, level) {
   let mapGenerationInProgress = false; // Flag to track map generation
+  /*
   // Handle collision between dangerous entities and walls
-  onCollideUpdate("dangerous", "wall", (s) => {
+  onCollide("dangerous", "wall", (s) => {
+    console.log("SLICER COLLISION DETECTED");
     s.dir = -s.dir;
+  });*/
+
+  // Register collision handling with walls
+  onCollideUpdate("slicer", "wall", (slicer, other) => {
+    // Reverse direction only once per collision event
+    if (!slicer._isReversing) {
+      console.log("Slicer colliding with the wall. Reversing direction.");
+      slicer.dir = -slicer.dir; // Reverse direction
+      slicer._isReversing = true; // Mark as reversing
+    }
+  });
+
+  // Cleanup the reversal flag when collision ends
+  onCollideEnd("slicer", "wall", (slicer, other) => {
+    console.log("Slicer stopped colliding with the wall.");
+    slicer._isReversing = false; // Reset the reversal flag when no longer colliding
+  });
+
+  // Register collision handling with walls
+  onCollideUpdate("slicer", "dangerous", (slicer, other) => {
+    // Reverse direction only once per collision event
+    if (!slicer._isReversing) {
+      console.log("Slicer colliding with the wall. Reversing direction.");
+      slicer.dir = -slicer.dir; // Reverse direction
+      slicer._isReversing = true; // Mark as reversing
+    }
+  });
+
+  // Cleanup the reversal flag when collision ends
+  onCollideEnd("slicer", "dangerous", (slicer, other) => {
+    console.log("Slicer stopped colliding with the wall.");
+    slicer._isReversing = false; // Reset the reversal flag when no longer colliding
   });
 
   // Handle collision between the player and danger entities (game over)
@@ -19,7 +53,7 @@ export function handleCollisions(player, scoreLabel, maps, level) {
     go("lose", { score: scoreLabel.value });
   });
   /*
-  // Handle collision between player and next-level objects (advance level)
+  //OPEN AI VERSION: Handle collision between player and next-level objects (advance level)
   onCollideUpdate("player", "next-level", async () => {
     if (mapGenerationInProgress) return; // Prevent multiple API calls
 

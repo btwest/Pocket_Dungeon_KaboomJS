@@ -22,10 +22,6 @@ export function generateDungeon(exitPos) {
           return " ";
         })
     );
-  /*
-  // Place player start position near the bottom-left
-  const playerStart = { row: rows - 2, col: 1 };
-  map[playerStart.row][playerStart.col] = " "; */
 
   // Ensure exitPos is correctly defined
   if (!exitPos) {
@@ -51,41 +47,41 @@ export function generateDungeon(exitPos) {
     playerStart.col = 1; // Player starts on the left
   }
 
-  //map[playerStart.row][playerStart.col] = " "; // Set player start position
+  // Update player start position
   updateStart({ row: playerStart.row, col: playerStart.col });
 
-  // Place a door or stairs at a random location
-  const doorOptions = [
-    { row: 0, col: Math.floor(cols / 2), char: "^" }, // Top door
-    { row: Math.floor(rows / 2), col: 0, char: "$" }, // Left door
-    { row: Math.floor(rows / 2), col: cols - 1, char: "$" }, // Right door
-    { row: rows - 1, col: Math.floor(cols / 2), char: "{" }, // Bottom stairs
-  ];
+  // Place exit doors based on wall types
+  const exitDoors = {
+    top: "e", // Top exit door
+    left: "s", // Left exit door
+    right: "g", // Right exit door
+    bottom: "d", // Bottom exit door
+  };
 
-  // Ensure at least one next-level asset is placed
-  const nextLevelOption = Math.random() < 0.5 ? doorOptions[0] : doorOptions[3]; // Either top door or bottom stairs
-  map[nextLevelOption.row][nextLevelOption.col] = nextLevelOption.char;
+  // Place entrance doors based on player start position
+  const entranceDoors = {
+    top: "^", // Top entrance door
+    left: "(", // Left entrance door
+    right: ")", // Right entrance door
+    bottom: "-", // Bottom entrance door
+  };
 
-  // Update exitPos to reflect the new exit location
-  updateExit({ row: nextLevelOption.row, col: nextLevelOption.col });
-
-  // Place enemies
-  const enemyCount = Math.floor(Math.random() * 4) + 1; // 1-4 enemies
-  for (let i = 0; i < enemyCount; i++) {
-    let r, c;
-    do {
-      r = Math.floor(Math.random() * rows);
-      c = Math.floor(Math.random() * cols);
-    } while (
-      map[r][c] !== " " ||
-      (Math.abs(r - playerStart.row) <= 1 && Math.abs(c - playerStart.col) <= 1)
-    );
-    map[r][c] = Math.random() < 0.5 ? "*" : "!";
+  // Determine the direction of the exit and place the corresponding entrance door
+  if (exitPos.row === 0) {
+    // Exit is at the top, place entrance on the bottom
+    map[rows - 1][exitPos.col] = entranceDoors.bottom; // Place entrance door on bottom wall
+  } else if (exitPos.row === rows - 1) {
+    // Exit is at the bottom, place entrance on the top
+    map[0][exitPos.col] = entranceDoors.top; // Place entrance door on top wall
+  } else if (exitPos.col === 0) {
+    // Exit is on the left, place entrance on the right
+    map[exitPos.row][cols - 1] = entranceDoors.right; // Place entrance door on right wall
+  } else if (exitPos.col === cols - 1) {
+    // Exit is on the right, place entrance on the left
+    map[exitPos.row][0] = entranceDoors.left; // Place entrance door on left wall
   }
 
-  // Place lanterns
-  const maxLanterns = Math.floor(Math.random() * 8) + 1; // Random number of lanterns between 1 and 8
-  let lanternsPlaced = 0;
+  // Randomize the perimeter order for exit placement
   const perimeter = [
     ...Array(cols)
       .fill(0)
@@ -104,6 +100,51 @@ export function generateDungeon(exitPos) {
   // Randomize the perimeter order
   const shuffledPerimeter = perimeter.sort(() => Math.random() - 0.5);
 
+  // Loop through the perimeter and place exit doors
+  for (let i = 0; i < shuffledPerimeter.length; i++) {
+    const { row, col } = shuffledPerimeter[i];
+
+    if (
+      !["^", "$", "{", "w", "x", "y", "z", "%", "@", "`", "&"].includes(
+        map[row][col]
+      ) // Ensure no door or lantern is replaced
+    ) {
+      if (map[row][col] === "t") {
+        map[row][col] = exitDoors.top; // Top wall gets top exit door
+        updateExit({ row: row, col: col });
+      } else if (map[row][col] === "l") {
+        map[row][col] = exitDoors.left; // Left wall gets left exit door
+        updateExit({ row: row, col: col });
+      } else if (map[row][col] === "r") {
+        map[row][col] = exitDoors.right; // Right wall gets right exit door
+        updateExit({ row: row, col: col });
+      } else if (map[row][col] === "b") {
+        map[row][col] = exitDoors.bottom; // Bottom wall gets bottom exit door
+        updateExit({ row: row, col: col });
+      }
+
+      break; // Exit once an exit door has been placed
+    }
+  }
+
+  // Place enemies
+  const enemyCount = Math.floor(Math.random() * 4) + 1; // 1-4 enemies
+  for (let i = 0; i < enemyCount; i++) {
+    let r, c;
+    do {
+      r = Math.floor(Math.random() * rows);
+      c = Math.floor(Math.random() * cols);
+    } while (
+      map[r][c] !== " " ||
+      (Math.abs(r - playerStart.row) <= 1 && Math.abs(c - playerStart.col) <= 1)
+    );
+    map[r][c] = Math.random() < 0.5 ? "*" : "!";
+  }
+
+  // Place lanterns
+  const maxLanterns = Math.floor(Math.random() * 8) + 1; // Random number of lanterns between 1 and 8
+  let lanternsPlaced = 0;
+
   // Loop through the perimeter and place lanterns
   for (let i = 0; i < shuffledPerimeter.length; i++) {
     if (lanternsPlaced >= maxLanterns) break;
@@ -113,9 +154,18 @@ export function generateDungeon(exitPos) {
     // Only place a lantern if it's not a door, corner, or already a lantern
     if (
       !["^", "$", "{", "w", "x", "y", "z"].includes(map[row][col]) &&
-      map[row][col] !== "%"
+      !["%", "@", "`", "&"].includes(map[row][col])
     ) {
-      map[row][col] = "%"; // Place lantern
+      // Place lantern based on wall type
+      if (map[row][col] === "t") {
+        map[row][col] = "%"; // Top lantern
+      } else if (map[row][col] === "b") {
+        map[row][col] = "@"; // Bottom lantern
+      } else if (map[row][col] === "l") {
+        map[row][col] = "`"; // Left lantern
+      } else if (map[row][col] === "r") {
+        map[row][col] = "&"; // Right lantern
+      }
       lanternsPlaced++;
     }
   }

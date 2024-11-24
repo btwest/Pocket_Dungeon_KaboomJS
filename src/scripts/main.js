@@ -21,6 +21,7 @@ const k = kaboom({
   fullscreen: true,
   scale: 1,
   debug: true,
+
   background: [0, 0, 0],
   showHitboxes: true,
 });
@@ -51,14 +52,14 @@ scene("game", async ({ level, score, maps }) => {
   if (!maps) {
     maps = [
       [
-        "wt%ttt^ttx",
+        "wtttt%e%tx",
         "l        r",
         "l        r",
+        "`        &",
+        "(        r",
+        "`        &",
         "l        r",
-        "$        r",
-        "l        r",
-        "l        r",
-        "ybbbbbb%bz",
+        "yb@b@bbbbz",
       ],
     ];
   }
@@ -98,6 +99,7 @@ scene("game", async ({ level, score, maps }) => {
 
   // Update slicer enemies' movement
   onUpdate("slicer", (s) => {
+    console.log("Slicer direction:", s.dir);
     s.move(s.dir * SLICER_SPEED, 0);
   });
 

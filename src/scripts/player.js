@@ -10,7 +10,7 @@ export function setupPlayer() {
   const player = add([
     sprite("link-idle-right"),
     "player",
-    area({ shape: new Rect(vec2(5, 5), 40, 40) }), // Reduced hitbox size (not finalized)
+    area({ shape: new Rect(vec2(0, 0), 40, 40) }), // Reduced hitbox size (not finalized)
     body(),
     anchor("center"),
     pos(playerPosX, playerPosY),
