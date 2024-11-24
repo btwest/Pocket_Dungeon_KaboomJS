@@ -33,6 +33,17 @@ const SKELETOR_SPEED = 60;
 // Load Assets
 loadAssets();
 
+export let exitPos = { row: 0, col: 6 };
+export let startPos = { row: 4, col: 1 };
+
+export function updateExit(newExit) {
+  exitPos = newExit;
+}
+
+export function updateStart(newStart) {
+  startPos = newStart;
+}
+
 // Define the main game scene
 scene("game", async ({ level, score, maps }) => {
   console.log("Game scene initialized");

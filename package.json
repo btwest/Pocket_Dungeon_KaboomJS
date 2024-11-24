@@ -4,10 +4,10 @@
   "main": "main.js",
   "type": "module",
   "scripts": {
-  "start": "rm -rf dist && webpack serve --mode development",
-  "build": "rm -rf dist && webpack --mode production",
-  "serve": "node server.js"
-},
+    "start": "rm -rf dist && webpack serve --mode development",
+    "build": "rm -rf dist && webpack --mode production",
+    "server": "node server.js"
+  },
   "dependencies": {
     "buffer": "^6.0.3",
     "cors": "^2.8.5",
