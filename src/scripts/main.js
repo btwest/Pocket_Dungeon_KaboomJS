@@ -10,11 +10,11 @@ import { levelConfiguration, mapGeneration } from "./mapMaker.js";
 import { handleCollisions } from "./collisions.js";
 import { generateMap } from "./openAI.js";
 import { parseMapData } from "./mapParser.js";
-import kaboom from "kaplay";
+import kaplay from "kaplay";
 
 console.log("Initializing Kaboom...");
 // initialize kaboom context
-const k = kaboom({
+const k = kaplay({
   width: 480,
   height: 432,
   global: true,

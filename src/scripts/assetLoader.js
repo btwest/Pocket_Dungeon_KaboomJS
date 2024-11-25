@@ -157,6 +157,25 @@ export function loadAssets() {
   loadSprite("stairs", "assets/stairs.png");
   loadSprite("floor", "assets/floor_border_offwhite.png");
 
+  loadSpriteAtlas("assets/lantern_anim.png", {
+    "lantern-animation": {
+      x: 0,
+      y: 0,
+      width: 336,
+      height: 48,
+      sliceX: 7, // Number of frames horizontally
+      sliceY: 1, // Number of frames vertically
+      anims: {
+        flicker: {
+          from: 0,
+          to: 6, // Indices of the frames (0-based)
+          speed: 3,
+          loop: loop,
+        },
+      },
+    },
+  });
+
   // Load Enemy Sprites
   loadSprite("skeletor", "assets/skeletor.png");
   loadSprite("slicer", "assets/slicer.png");

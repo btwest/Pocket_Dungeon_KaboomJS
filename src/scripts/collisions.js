@@ -101,7 +101,7 @@ export function handleCollisions(player, scoreLabel, maps, level) {
     }
   });
   // Handle collision between explosion and skeletor (destroy skeletor, increase score)
-  onCollideUpdate("kaboom", "dangerous", (k, s) => {
+  onCollideUpdate("attack", "dangerous", (k, s) => {
     wait(1, () => {
       destroy(k);
     });

@@ -89,16 +89,15 @@ export function levelConfiguration() {
         "wall",
       ],
       "%": () => [
-        sprite("lanterns"),
+        sprite("lantern-animation", { anim: "flicker" }),
         area(),
-
         body({ isStatic: true }),
         "wall",
         "top-wall",
         "top-lantern",
       ],
       "&": () => [
-        sprite("lanterns"),
+        sprite("lantern-animation", { anim: "flicker" }),
         area(),
         anchor("botleft"),
         body({ isStatic: true }),
@@ -108,7 +107,7 @@ export function levelConfiguration() {
         rotate(90),
       ],
       "`": () => [
-        sprite("lanterns"),
+        sprite("lantern-animation", { anim: "flicker" }),
         area(),
         anchor("topright"),
         body({ isStatic: true }),
@@ -118,7 +117,7 @@ export function levelConfiguration() {
         rotate(-90),
       ],
       "@": () => [
-        sprite("lanterns"),
+        sprite("lantern-animation", { anim: "flicker" }),
         area(),
         anchor("botright"),
         body({ isStatic: true }),
