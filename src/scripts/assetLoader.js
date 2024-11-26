@@ -139,6 +139,40 @@ export function loadAssets() {
     },
   });
 
+  // Non-Combat Player Animations
+
+  //PUSH
+  loadSpriteAtlas("assets/link_push_atlas.png", {
+    "link-push": {
+      x: 0,
+      y: 0,
+      width: 288,
+      height: 48,
+      sliceX: 6,
+      sliceY: 1,
+      anims: {
+        pushdown: {
+          from: 0,
+          to: 1,
+          speed: 7,
+          loop: true,
+        },
+        pushup: {
+          from: 2,
+          to: 3,
+          speed: 7,
+          loop: true,
+        },
+        pushside: {
+          from: 4,
+          to: 5,
+          speed: 7,
+          loop: true,
+        },
+      },
+    },
+  });
+
   // Load Environment Sprites
   // Load Walls
   loadSprite("left-wall", "assets/left_wall.png");

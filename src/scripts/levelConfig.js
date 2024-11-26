@@ -1,48 +1,3 @@
-export function mapGeneration() {
-  return [
-    [
-      "wt%ttt^ttx",
-      "l        r",
-      "l        r",
-      "l        r",
-      "$        r",
-      "l        r",
-      "l        r",
-      "ybbbbbb%bz",
-    ],
-    [
-      "wt%ttt^ttx",
-      "l        r",
-      "l      * r",
-      "l        r",
-      "$    f   r",
-      "l        r",
-      "l   *    r",
-      "ybbbbbb%bz",
-    ],
-    [
-      "wttttttttx",
-      "l        r",
-      "%   {    %",
-      "l        r",
-      "l        r",
-      "l      ! r",
-      "%        %",
-      "ybbbbbbbbz",
-    ], // AI Generated Level
-    [
-      "wt%ttt^ttx",
-      "l        r",
-      "l   !    r",
-      "$   {    r",
-      "l   *    r",
-      "l        r",
-      "l    f   r",
-      "ybbbbbb%bz",
-    ],
-  ];
-}
-
 export function levelConfiguration() {
   return {
     tileWidth: 48,
@@ -173,7 +128,7 @@ export function levelConfiguration() {
       f: () => [sprite("fire-pot"), area(), body({ isStatic: true })],
       "{": () => [
         sprite("stairs"),
-        area({ shape: new Rect(vec2(0, 0), 40, 40) }),
+        area(),
         body({ isStatic: true }),
         "next-level",
       ],
@@ -181,10 +136,10 @@ export function levelConfiguration() {
         sprite("slicer"),
         "slicer",
         "dangerous",
-
         area({ scale: 0.8 }),
         anchor("center"),
         body(),
+        health(2),
         { dir: -1 }, //initial movement direction
       ],
       "!": () => [
@@ -194,6 +149,7 @@ export function levelConfiguration() {
         anchor("center"),
         area({ shape: new Rect(vec2(0, 0), 40, 40) }),
         body(),
+        health(2),
         { dir: -1, timer: 0 },
       ],
     },

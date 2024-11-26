@@ -1,4 +1,4 @@
-export function updateAnimations(player, vector, attacking) {
+export function updateAnimations(player, vector, isAttacking, isPushing) {
   function setSprite(player, spriteName) {
     if (player.currentSprite !== spriteName) {
       player.use(sprite(spriteName));
@@ -10,7 +10,40 @@ export function updateAnimations(player, vector, attacking) {
   }
   const x = vector.x;
   const y = vector.y;
-  if (attacking) {
+  if (isPushing) {
+    // Handle push animations
+    switch (true) {
+      case vec2Equals(player.dir, vec2(0, -1)):
+        setSprite(player, "link-push");
+        if (player.curAnim() !== "pushup") {
+          player.play("pushup");
+        }
+        break;
+      case vec2Equals(player.dir, vec2(0, 1)):
+        console.log("PUSH DOWN");
+        setSprite(player, "link-push");
+        if (player.curAnim() !== "pushdown") {
+          player.play("pushdown");
+        }
+        break;
+      case vec2Equals(player.dir, vec2(-1, 0)):
+        player.flipX = false;
+        setSprite(player, "link-push");
+        if (player.curAnim() !== "pushside") {
+          player.play("pushside");
+        }
+        break;
+      case vec2Equals(player.dir, vec2(1, 0)):
+        player.flipX = true;
+        setSprite(player, "link-push");
+        if (player.curAnim() !== "pushside") {
+          player.play("pushside");
+        }
+        break;
+    }
+    return; // Exit early, as pushing takes priority
+  }
+  if (isAttacking) {
     //Handle slash animations depending on vector
     switch (true) {
       case vec2Equals(player.dir, vec2(0, -1)):

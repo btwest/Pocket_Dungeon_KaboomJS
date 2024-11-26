@@ -6,7 +6,7 @@ import {
   setupGamepadControls,
 } from "./inputControls.js";
 import { updateAnimations } from "./playerAnimations.js";
-import { levelConfiguration, mapGeneration } from "./mapMaker.js";
+import { levelConfiguration, mapGeneration } from "./levelConfig.js";
 import { handleCollisions } from "./collisions.js";
 import { generateMap } from "./openAI.js";
 import { parseMapData } from "./mapParser.js";
@@ -14,7 +14,7 @@ import kaplay from "kaplay";
 
 console.log("Initializing Kaboom...");
 // initialize kaboom context
-const k = kaplay({
+export const k = kaplay({
   width: 480,
   height: 432,
   global: true,
@@ -56,7 +56,7 @@ scene("game", async ({ level, score, maps }) => {
         "l        r",
         "l        r",
         "`        &",
-        "(        r",
+        "(     !  r",
         "`        &",
         "l        r",
         "yb@b@bbbbz",
@@ -90,8 +90,13 @@ scene("game", async ({ level, score, maps }) => {
 
   // Update movement continuously in the game loop
   onUpdate(() => {
-    updatePlayer(player, movementVector, player.attacking);
-    updateAnimations(player, movementVector, player.attacking);
+    updatePlayer(player, movementVector, player.isAttacking, player.isPushing);
+    updateAnimations(
+      player,
+      movementVector,
+      player.isAttacking,
+      player.isPushing
+    );
   });
 
   // handle Collisions
@@ -99,7 +104,6 @@ scene("game", async ({ level, score, maps }) => {
 
   // Update slicer enemies' movement
   onUpdate("slicer", (s) => {
-    console.log("Slicer direction:", s.dir);
     s.move(s.dir * SLICER_SPEED, 0);
   });
 

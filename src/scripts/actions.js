@@ -21,7 +21,7 @@ function spawnSlash(p) {
     "kaboom",
     "attack",
     area({ shape: new Rect(vec2(0, 0), 40, 40) }), // Reduced hitbox size (not finalized)
-    body({ isStatic: true }),
+    //body({ isStatic: true }), don't think hitbox needs body
   ]);
   wait(0.2, () => {
     destroy(obj);
@@ -39,10 +39,10 @@ export async function handleAction(player, action) {
       spawnKaboom(player.pos.add(player.dir.scale(48)));
       break;
     case "sword":
-      player.attacking = true;
+      player.isAttacking = true;
       spawnSlash(player.pos.add(player.dir.scale(48)));
       await new Promise((resolve) => setTimeout(resolve, 200));
-      player.attacking = false;
+      player.isAttacking = false;
       break;
   }
 }

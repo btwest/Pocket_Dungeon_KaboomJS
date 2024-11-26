@@ -9,16 +9,19 @@ export function setupPlayer() {
 
   const player = add([
     sprite("link-idle-right"),
+    anchor("center"),
     "player",
     area({ shape: new Rect(vec2(0, 0), 40, 40) }), // Reduced hitbox size (not finalized)
     body(),
-    anchor("center"),
+
     pos(playerPosX, playerPosY),
     { dir: vec2(1, 0) },
     { currentSprite: "link-idle-right" },
     { flipTime: 0 },
     { item1: "sword" },
-    { attacking: false },
+    { isAttacking: false },
+    { isPushing: false },
+    { isMoving: false },
   ]);
   player.flipX = false;
   return player;

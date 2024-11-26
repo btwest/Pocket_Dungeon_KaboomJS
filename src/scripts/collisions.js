@@ -2,23 +2,16 @@ import { generateMap } from "./openAI.js";
 import { parseMapData } from "./mapParser.js";
 // Import the local dungeon generation function
 import { generateDungeon } from "./generateDungeon.js";
-import { exitPos, startPos, updateStart } from "./main.js";
+import { k, exitPos, startPos, updateStart } from "./main.js";
 import { updatePlayer } from "./player.js";
 
 export function handleCollisions(player, scoreLabel, maps, level) {
   let mapGenerationInProgress = false; // Flag to track map generation
-  /*
-  // Handle collision between dangerous entities and walls
-  onCollide("dangerous", "wall", (s) => {
-    console.log("SLICER COLLISION DETECTED");
-    s.dir = -s.dir;
-  });*/
 
   // Register collision handling with walls
   onCollideUpdate("slicer", "wall", (slicer, other) => {
     // Reverse direction only once per collision event
     if (!slicer._isReversing) {
-      console.log("Slicer colliding with the wall. Reversing direction.");
       slicer.dir = -slicer.dir; // Reverse direction
       slicer._isReversing = true; // Mark as reversing
     }
@@ -26,7 +19,6 @@ export function handleCollisions(player, scoreLabel, maps, level) {
 
   // Cleanup the reversal flag when collision ends
   onCollideEnd("slicer", "wall", (slicer, other) => {
-    console.log("Slicer stopped colliding with the wall.");
     slicer._isReversing = false; // Reset the reversal flag when no longer colliding
   });
 
@@ -34,7 +26,6 @@ export function handleCollisions(player, scoreLabel, maps, level) {
   onCollideUpdate("slicer", "dangerous", (slicer, other) => {
     // Reverse direction only once per collision event
     if (!slicer._isReversing) {
-      console.log("Slicer colliding with the wall. Reversing direction.");
       slicer.dir = -slicer.dir; // Reverse direction
       slicer._isReversing = true; // Mark as reversing
     }
@@ -42,8 +33,43 @@ export function handleCollisions(player, scoreLabel, maps, level) {
 
   // Cleanup the reversal flag when collision ends
   onCollideEnd("slicer", "dangerous", (slicer, other) => {
-    console.log("Slicer stopped colliding with the wall.");
     slicer._isReversing = false; // Reset the reversal flag when no longer colliding
+  });
+
+  // Handle player walking into wall or object (Push)
+  onCollideUpdate("player", "wall", (player, wall) => {
+    console.log("player dir: " + player.dir);
+    console.log("wall: " + wall.pos);
+    console.log("player pos: " + player.pos);
+
+    console.log("Player Bounds:", {
+      left: player.pos.x - 20,
+      right: player.pos.x + 20,
+      top: player.pos.y - 20,
+      bottom: player.pos.y + 20,
+    });
+    console.log("Wall Bounds:", {
+      left: wall.pos.x,
+      right: wall.pos.x + 48,
+      top: wall.pos.y,
+      bottom: wall.pos.y + 48,
+    });
+
+    // Check if the player is moving towards the wall based on their direction
+    const movingTowardsWall =
+      player.isMoving && // Ensure the player is moving
+      ((player.dir.x > 0 && player.pos.x + 20 <= wall.pos.x) || // Right (moving right)
+        (player.dir.x < 0 && player.pos.x - 20 >= wall.pos.x) || // Left (moving left)
+        (player.dir.y > 0 && player.pos.y + 20 <= wall.pos.y) || // Down (moving down)
+        (player.dir.y < 0 && player.pos.y - 20 >= wall.pos.y)); // Up (moving up)
+
+    console.log(movingTowardsWall);
+
+    if (movingTowardsWall) {
+      player.isPushing = true;
+    } else {
+      player.isPushing = false;
+    }
   });
 
   // Handle collision between the player and danger entities (game over)
@@ -52,8 +78,10 @@ export function handleCollisions(player, scoreLabel, maps, level) {
     // Game over
     go("lose", { score: scoreLabel.value });
   });
+
   /*
-  //OPEN AI VERSION: Handle collision between player and next-level objects (advance level)
+  // OPEN AI VERSION (DONT DELTE):
+  Handle collision between player and next-level objects (advance level)
   onCollideUpdate("player", "next-level", async () => {
     if (mapGenerationInProgress) return; // Prevent multiple API calls
 
@@ -101,12 +129,42 @@ export function handleCollisions(player, scoreLabel, maps, level) {
     }
   });
   // Handle collision between explosion and skeletor (destroy skeletor, increase score)
-  onCollideUpdate("attack", "dangerous", (k, s) => {
-    wait(1, () => {
-      destroy(k);
+  let canAttack = true;
+
+  onCollideUpdate("attack", "dangerous", async (attack, enemy) => {
+    if (!canAttack) return; // Ignore collisions during cooldown
+
+    // Mark as not able to attack and set a cooldown
+    canAttack = false;
+    wait(0.3, () => {
+      // Adjust the cooldown duration as needed
+      canAttack = true;
     });
-    destroy(s);
-    scoreLabel.value++;
-    scoreLabel.text = scoreLabel.value;
+
+    wait(1, () => {
+      destroy(attack);
+    });
+
+    enemy.hurt(1);
+    //TODO: bounce back
+
+    // Calculate bounce direction
+    const direction = vec2(
+      enemy.pos.x - attack.pos.x,
+      enemy.pos.y - attack.pos.y
+    ).unit();
+    console.log("DIRECTION:" + direction);
+
+    // Apply a small push force
+    //await enemy.move(direction, 20);
+
+    console.log("Enemy Health: " + enemy.hp());
+
+    if (enemy.hp() <= 0) {
+      console.log("destroying enemy");
+      destroy(enemy);
+      scoreLabel.value++;
+      scoreLabel.text = scoreLabel.value;
+    }
   });
 }
