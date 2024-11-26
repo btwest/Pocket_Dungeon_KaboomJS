@@ -33,6 +33,9 @@ function wait(ms) {
 } */
 
 export async function handleAction(player, action) {
+  if (player.isPushing) {
+    return;
+  }
   switch (action) {
     case "fireblast":
       console.log("spawning kaboom");

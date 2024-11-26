@@ -2,10 +2,46 @@ export function loadAssets() {
   // Load Player Sprites
   loadSprite("link-left", "assets/link_left.png");
   loadSprite("link-right", "assets/link_right.png");
-  loadSprite("link-down", "assets/link_down_1.png");
-  loadSprite("link-up", "assets/link_up.png");
-  loadSprite("link-idle-right", "assets/link_idle_right.png");
-  loadSprite("link-idle-left", "assets/link_idle_left.png");
+  loadSprite("link-down", "assets/link_down_1.png", {
+    sliceX: 1,
+    sliceY: 1,
+    anims: {
+      idle: {
+        from: 0,
+        to: 0,
+      },
+    },
+  });
+  loadSprite("link-up", "assets/link_up.png", {
+    sliceX: 1,
+    sliceY: 1,
+    anims: {
+      idle: {
+        from: 0,
+        to: 0,
+      },
+    },
+  });
+  loadSprite("link-idle-right", "assets/link_idle_right.png", {
+    sliceX: 1,
+    sliceY: 1,
+    anims: {
+      idle: {
+        from: 0,
+        to: 0,
+      },
+    },
+  });
+  loadSprite("link-idle-left", "assets/link_idle_left.png", {
+    sliceX: 1,
+    sliceY: 1,
+    anims: {
+      idle: {
+        from: 0,
+        to: 0,
+      },
+    },
+  });
 
   loadSpriteAtlas("assets/link_walk.png", {
     "player-side": {
@@ -15,7 +51,9 @@ export function loadAssets() {
       height: 48,
       sliceX: 2,
       sliceY: 1,
-      anims: { walk: { from: 0, to: 1, speed: 6 } },
+      anims: {
+        walk: { from: 1, to: 0, speed: 6, loop: true },
+      },
     },
   });
 
@@ -27,7 +65,7 @@ export function loadAssets() {
       height: 48,
       sliceX: 2,
       sliceY: 1,
-      anims: { walkdown: { from: 0, to: 1, speed: 6 } },
+      anims: { walkdown: { from: 0, to: 1, speed: 6, loop: true } },
     },
   });
 
@@ -39,7 +77,7 @@ export function loadAssets() {
       height: 48,
       sliceX: 2,
       sliceY: 1,
-      anims: { walkup: { from: 0, to: 1, speed: 6 } },
+      anims: { walkup: { from: 1, to: 0, speed: 6, loop: true } },
     },
   });
   /*I

@@ -38,38 +38,43 @@ export function handleCollisions(player, scoreLabel, maps, level) {
 
   // Handle player walking into wall or object (Push)
   onCollideUpdate("player", "wall", (player, wall) => {
-    console.log("player dir: " + player.dir);
-    console.log("wall: " + wall.pos);
-    console.log("player pos: " + player.pos);
+    if (!player.isMoving) {
+      player.isPushing = false;
+      return;
+    }
+    //console.log("player dir: " + player.dir);
+    //console.log("wall: " + wall.pos);
+    //console.log("player pos: " + player.pos);
 
-    console.log("Player Bounds:", {
-      left: player.pos.x - 20,
-      right: player.pos.x + 20,
-      top: player.pos.y - 20,
-      bottom: player.pos.y + 20,
-    });
-    console.log("Wall Bounds:", {
-      left: wall.pos.x,
-      right: wall.pos.x + 48,
-      top: wall.pos.y,
-      bottom: wall.pos.y + 48,
-    });
-
-    // Check if the player is moving towards the wall based on their direction
     const movingTowardsWall =
       player.isMoving && // Ensure the player is moving
-      ((player.dir.x > 0 && player.pos.x + 20 <= wall.pos.x) || // Right (moving right)
-        (player.dir.x < 0 && player.pos.x - 20 >= wall.pos.x) || // Left (moving left)
-        (player.dir.y > 0 && player.pos.y + 20 <= wall.pos.y) || // Down (moving down)
-        (player.dir.y < 0 && player.pos.y - 20 >= wall.pos.y)); // Up (moving up)
+      ((player.dir.x > 0 &&
+        player.pos.x + 20 <= wall.pos.x &&
+        player.pos.y + 20 > wall.pos.y &&
+        player.pos.y - 20 < wall.pos.y + wall.height) || // Right (moving right)
+        (player.dir.x < 0 &&
+          player.pos.x - 20 >= wall.pos.x + wall.width &&
+          player.pos.y + 20 > wall.pos.y &&
+          player.pos.y - 20 < wall.pos.y + wall.height) || // Left (moving left)
+        (player.dir.y > 0 &&
+          player.pos.y + 20 <= wall.pos.y &&
+          player.pos.x + 20 > wall.pos.x &&
+          player.pos.x - 20 < wall.pos.x + wall.width) || // Down (moving down)
+        (player.dir.y < 0 &&
+          player.pos.y - 20 >= wall.pos.y + wall.height &&
+          player.pos.x + 20 > wall.pos.x &&
+          player.pos.x - 20 < wall.pos.x + wall.width)); // Up (moving up)
 
-    console.log(movingTowardsWall);
+    //console.log(movingTowardsWall);
 
     if (movingTowardsWall) {
       player.isPushing = true;
-    } else {
-      player.isPushing = false;
     }
+  });
+
+  // Cleanup the reversal flag when collision ends
+  onCollideEnd("player", "wall", (player, wall) => {
+    player.isPushing = false; // Reset the reversal flag when no longer colliding
   });
 
   // Handle collision between the player and danger entities (game over)

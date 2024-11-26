@@ -56,7 +56,7 @@ scene("game", async ({ level, score, maps }) => {
         "l        r",
         "l        r",
         "`        &",
-        "(     !  r",
+        "(        r",
         "`        &",
         "l        r",
         "yb@b@bbbbz",
@@ -95,7 +95,8 @@ scene("game", async ({ level, score, maps }) => {
       player,
       movementVector,
       player.isAttacking,
-      player.isPushing
+      player.isPushing,
+      player.isMoving
     );
   });
 

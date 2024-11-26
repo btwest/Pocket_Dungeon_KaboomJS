@@ -1,4 +1,13 @@
-export function updateAnimations(player, vector, isAttacking, isPushing) {
+export function updateAnimations(
+  player,
+  vector,
+  isAttacking,
+  isPushing,
+  isMoving
+) {
+  console.log(player.curAnim());
+  //console.log(player.curAnim());
+
   function setSprite(player, spriteName) {
     if (player.currentSprite !== spriteName) {
       player.use(sprite(spriteName));
@@ -10,6 +19,8 @@ export function updateAnimations(player, vector, isAttacking, isPushing) {
   }
   const x = vector.x;
   const y = vector.y;
+  //console.log("x: " + x + " y: " + y);
+  //Determine isPushing if player is moving and there is wall infront of player isPushing = true
   if (isPushing) {
     // Handle push animations
     switch (true) {
@@ -20,7 +31,6 @@ export function updateAnimations(player, vector, isAttacking, isPushing) {
         }
         break;
       case vec2Equals(player.dir, vec2(0, 1)):
-        console.log("PUSH DOWN");
         setSprite(player, "link-push");
         if (player.curAnim() !== "pushdown") {
           player.play("pushdown");
@@ -78,6 +88,7 @@ export function updateAnimations(player, vector, isAttacking, isPushing) {
         break;
     }
   } else {
+    // WALKING
     switch (true) {
       case x === 0 && y === -1:
         // Moving up
@@ -85,7 +96,6 @@ export function updateAnimations(player, vector, isAttacking, isPushing) {
         if (player.curAnim() !== "walkup") {
           player.play("walkup");
         }
-
         break;
       case x === 0 && y === 1:
         // Moving down
@@ -93,7 +103,6 @@ export function updateAnimations(player, vector, isAttacking, isPushing) {
         if (player.curAnim() !== "walkdown") {
           player.play("walkdown");
         }
-
         break;
       case x === -1 && y === 0:
         // Moving left
@@ -110,15 +119,31 @@ export function updateAnimations(player, vector, isAttacking, isPushing) {
         if (player.curAnim() !== "walk") {
           player.play("walk");
         }
+
         break;
       case x === -1 && y === -1:
         // Moving Up-Left
         if (player.curAnim() === "walk") {
+          // Player was walking sideways, keep the side animation
+          //console.log(player.sprite);
+          //console.log(player.curAnim());
           player.flipX = false;
           setSprite(player, "player-side");
+          if (player.curAnim() !== "walk") {
+            player.play("walk");
+          }
         } else if (player.curAnim() === "walkup") {
+          // Player was walking up, continue with up animation
+          //console.log(player.sprite);
+          //console.log(player.curAnim());
           setSprite(player, "link-walk-up");
+          if (player.curAnim() !== "walkup") {
+            player.play("walkup");
+          }
         } else {
+          // Default to walkup if not walking previously
+          //console.log(player.sprite);
+          //console.log(player.curAnim());
           setSprite(player, "link-walk-up");
           if (player.curAnim() !== "walkup") {
             player.play("walkup");
@@ -170,20 +195,24 @@ export function updateAnimations(player, vector, isAttacking, isPushing) {
           case vec2Equals(player.dir, vec2(0, -1)):
             // Player Not moving, facing up
             setSprite(player, "link-up");
+            player.play("idle");
             break;
           case vec2Equals(player.dir, vec2(0, 1)):
             // Player Not moving, facing up
+
             setSprite(player, "link-down");
+            player.play("idle");
             break;
           case vec2Equals(player.dir, vec2(-1, 0)):
             // Player Not moving, facing up
             player.flipX = false;
             setSprite(player, "link-idle-left");
+            player.play("idle");
             break;
           case vec2Equals(player.dir, vec2(1, 0)):
-            // Player Not moving, facing up
-            player.flipX = true;
-            setSprite(player, "link-idle-left");
+            // Player Not moving, facing right
+            setSprite(player, "link-idle-right");
+            player.play("idle");
             break;
         }
         break;

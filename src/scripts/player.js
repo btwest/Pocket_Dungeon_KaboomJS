@@ -13,15 +13,15 @@ export function setupPlayer() {
     "player",
     area({ shape: new Rect(vec2(0, 0), 40, 40) }), // Reduced hitbox size (not finalized)
     body(),
-
     pos(playerPosX, playerPosY),
-    { dir: vec2(1, 0) },
-    { currentSprite: "link-idle-right" },
-    { flipTime: 0 },
-    { item1: "sword" },
-    { isAttacking: false },
-    { isPushing: false },
-    { isMoving: false },
+    {
+      dir: vec2(1, 0),
+      flipTime: 0,
+      item1: "sword",
+      isAttacking: false,
+      isPushing: false,
+      isMoving: false,
+    },
   ]);
   player.flipX = false;
   return player;
