@@ -260,6 +260,48 @@ export function loadAssets() {
   loadSprite("floor-en", "assets/floors/floor_sewers_basic_neExit.png");
   loadSprite("floor-nw", "assets/floors/floor_sewers_basic_nwExit.png");
   loadSprite("floor-", "assets/floors/floor_sewers_basic_noExit.png");
+  // Pitfall
+  loadSpriteAtlas("assets/surground.png", {
+    pitfallSingle: {
+      x: 0,
+      y: 128,
+      width: 16,
+      height: 16,
+    },
+    pitfallLeft: {
+      x: 16,
+      y: 128,
+      width: 16,
+      height: 16,
+    },
+    pitfallMiddle: {
+      x: 32,
+      y: 128,
+      width: 16,
+      height: 16,
+    },
+    pitfallRight: {
+      x: 48,
+      y: 128,
+      width: 16,
+      height: 16,
+    },
+  });
+
+  loadSpriteAtlas("assets/gameboydungeon/all_unclassified/props.png", {
+    stairsDown: {
+      x: 0,
+      y: 0,
+      width: 16,
+      height: 16,
+    },
+    stairsUp: {
+      x: 0,
+      y: 16,
+      width: 16,
+      height: 16,
+    },
+  });
 
   //Load UI Eleements
   loadSprite("hudbg", "assets/hudbg.png");

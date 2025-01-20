@@ -9,7 +9,8 @@ export function handleCollisions(player, scoreLabel, maps, level) {
   let mapGenerationInProgress = false; // Flag to track map generation
 
   onCollideUpdate("player", "next-level", (player, other) => {
-    go("game", { level: 0, score: 0 });
+    scoreLabel.value++;
+    go("game", { level: 0, score: scoreLabel.value });
   });
 
   // Register collision handling with walls
@@ -33,6 +34,13 @@ export function handleCollisions(player, scoreLabel, maps, level) {
       slicer.dir = -slicer.dir; // Reverse direction
       slicer._isReversing = true; // Mark as reversing
     }
+  });
+
+  // Register collision handling with walls
+  onCollideUpdate("skeletor", "pitfall", (skeletor, other) => {
+    // Reverse direction only once per collision event
+
+    skeletor.dir = -skeletor.dir; // Reverse direction
   });
 
   // Cleanup the reversal flag when collision ends
@@ -151,7 +159,6 @@ export function handleCollisions(player, scoreLabel, maps, level) {
       enemy.pos.x - attack.pos.x,
       enemy.pos.y - attack.pos.y
     ).unit();
-    console.log("DIRECTION:" + direction);
 
     // Apply a small push force
     //await enemy.move(direction, 20);
@@ -159,9 +166,8 @@ export function handleCollisions(player, scoreLabel, maps, level) {
     console.log("Enemy Health: " + enemy.hp());
 
     if (enemy.hp() <= 0) {
-      console.log("destroying enemy");
       destroy(enemy);
-      scoreLabel.value++;
+      //scoreLabel.value++;
       scoreLabel.text = scoreLabel.value;
     }
   });

@@ -150,32 +150,12 @@ scene("game", async ({ level, score, maps = [] }) => {
     const camY = chamberRow * roomHeightPixels + roomHeightPixels / 2;
 
     // Return the camera position as a vec2
-    return vec2(camX, camY);
+    return vec2(camX, camY + 24);
   }
 
   // Game loop
   onUpdate(() => {
     camPos(getCameraPosition(player.pos));
-    /*
-    if (!isTransitioning) {
-      // Check if the player moves out of room boundaries
-      if (player.pos.x > ROOM_WIDTH * (roomX + 1)) {
-        roomX++;
-      } else if (player.pos.x < ROOM_WIDTH * roomX) {
-        roomX--;
-      } else if (player.pos.y > ROOM_HEIGHT * (roomY + 1)) {
-        roomY++;
-      } else if (player.pos.y < ROOM_HEIGHT * roomY) {
-        roomY--;
-      }
-
-      // Trigger camera transition to the new room
-      const targetPos = vec2(
-        ROOM_WIDTH / 2 + ROOM_WIDTH * roomX,
-        ROOM_HEIGHT / 2 + ROOM_HEIGHT * roomY + 24
-      );
-      transitionCamera(targetPos);
-    }*/
 
     // Update player movement and animations
     updatePlayer(player, movementVector, player.isAttacking, player.isPushing);
@@ -217,6 +197,9 @@ scene("game", async ({ level, score, maps = [] }) => {
 // Define the lose scene
 scene("lose", ({ score }) => {
   add([text(score, 32), anchor("center"), pos(width() / 2, height() / 2)]);
+  onKeyPress("space", () => {
+    go("game", { level: 0, score: 0 });
+  });
 });
 
 // Start the game
