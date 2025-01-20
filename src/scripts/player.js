@@ -4,18 +4,19 @@ const TILE_SIZE = 48;
 
 export function setupPlayer() {
   console.log("SETTING UP PLAYER");
-  let playerPosX = startPos.col * TILE_SIZE + TILE_SIZE / 2;
-  let playerPosY = startPos.row * TILE_SIZE + TILE_SIZE / 2;
+  let playerPosX = startPos.row;
+  let playerPosY = startPos.col;
 
   const player = add([
-    sprite("link-idle-right"),
+    sprite("link-up"),
     anchor("center"),
     "player",
     area({ shape: new Rect(vec2(0, 0), 40, 40) }), // Reduced hitbox size (not finalized)
     body(),
+
     pos(playerPosX, playerPosY),
     {
-      dir: vec2(1, 0),
+      dir: vec2(0, -1),
       flipTime: 0,
       item1: "sword",
       isAttacking: false,
@@ -24,6 +25,7 @@ export function setupPlayer() {
     },
   ]);
   player.flipX = false;
+
   return player;
 }
 

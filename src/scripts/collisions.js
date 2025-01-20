@@ -1,12 +1,16 @@
 import { generateMap } from "./openAI.js";
 import { parseMapData } from "./mapParser.js";
 // Import the local dungeon generation function
-import { generateDungeon } from "./generateDungeon.js";
+//import { generateRoom } from "./generateRoom.js";
 import { k, exitPos, startPos, updateStart } from "./main.js";
 import { updatePlayer } from "./player.js";
 
 export function handleCollisions(player, scoreLabel, maps, level) {
   let mapGenerationInProgress = false; // Flag to track map generation
+
+  onCollideUpdate("player", "next-level", (player, other) => {
+    go("game", { level: 0, score: 0 });
+  });
 
   // Register collision handling with walls
   onCollideUpdate("slicer", "wall", (slicer, other) => {
@@ -36,45 +40,83 @@ export function handleCollisions(player, scoreLabel, maps, level) {
     slicer._isReversing = false; // Reset the reversal flag when no longer colliding
   });
 
-  // Handle player walking into wall or object (Push)
+  let activeWallCollisions = 0; // Track the number of active wall collisions
+
+  // Handle player walking into a wall or object (Push)
   onCollideUpdate("player", "wall", (player, wall) => {
     if (!player.isMoving) {
       player.isPushing = false;
       return;
     }
-    //console.log("player dir: " + player.dir);
-    //console.log("wall: " + wall.pos);
-    //console.log("player pos: " + player.pos);
 
     const movingTowardsWall =
-      player.isMoving && // Ensure the player is moving
+      player.isMoving &&
+      // Moving right (diagonal included)
       ((player.dir.x > 0 &&
         player.pos.x + 20 <= wall.pos.x &&
         player.pos.y + 20 > wall.pos.y &&
-        player.pos.y - 20 < wall.pos.y + wall.height) || // Right (moving right)
+        player.pos.y - 20 < wall.pos.y + wall.height) ||
+        // Moving left (diagonal included)
         (player.dir.x < 0 &&
           player.pos.x - 20 >= wall.pos.x + wall.width &&
           player.pos.y + 20 > wall.pos.y &&
-          player.pos.y - 20 < wall.pos.y + wall.height) || // Left (moving left)
+          player.pos.y - 20 < wall.pos.y + wall.height) ||
+        // Moving down (diagonal included)
         (player.dir.y > 0 &&
           player.pos.y + 20 <= wall.pos.y &&
           player.pos.x + 20 > wall.pos.x &&
-          player.pos.x - 20 < wall.pos.x + wall.width) || // Down (moving down)
+          player.pos.x - 20 < wall.pos.x + wall.width) ||
+        // Moving up (diagonal included)
         (player.dir.y < 0 &&
           player.pos.y - 20 >= wall.pos.y + wall.height &&
           player.pos.x + 20 > wall.pos.x &&
-          player.pos.x - 20 < wall.pos.x + wall.width)); // Up (moving up)
-
-    //console.log(movingTowardsWall);
+          player.pos.x - 20 < wall.pos.x + wall.width) ||
+        // Diagonal towards top-right
+        (player.dir.x > 0 &&
+          player.dir.y < 0 &&
+          player.pos.x + 20 <= wall.pos.x &&
+          player.pos.y - 20 >= wall.pos.y + wall.height) ||
+        // Diagonal towards bottom-right
+        (player.dir.x > 0 &&
+          player.dir.y > 0 &&
+          player.pos.x + 20 <= wall.pos.x &&
+          player.pos.y + 20 <= wall.pos.y) ||
+        // Diagonal towards top-left
+        (player.dir.x < 0 &&
+          player.dir.y < 0 &&
+          player.pos.x - 20 >= wall.pos.x + wall.width &&
+          player.pos.y - 20 >= wall.pos.y + wall.height) ||
+        // Diagonal towards bottom-left
+        (player.dir.x < 0 &&
+          player.dir.y > 0 &&
+          player.pos.x - 20 >= wall.pos.x + wall.width &&
+          player.pos.y + 20 <= wall.pos.y));
 
     if (movingTowardsWall) {
       player.isPushing = true;
     }
   });
 
-  // Cleanup the reversal flag when collision ends
+  // Detect when a collision with a wall begins
+  onCollide("player", "wall", (player, wall) => {
+    activeWallCollisions++;
+  });
+
+  // Detect when a collision with a wall ends
   onCollideEnd("player", "wall", (player, wall) => {
-    player.isPushing = false; // Reset the reversal flag when no longer colliding
+    // Decrement the active collision count
+    activeWallCollisions = Math.max(0, activeWallCollisions - 1);
+
+    // If there are no active wall collisions, stop pushing
+    if (activeWallCollisions === 0) {
+      player.isPushing = false;
+    }
+  });
+
+  // Debug log for visibility
+  onUpdate(() => {
+    //debug.log("Active Collisions: " + activeWallCollisions);
+    //debug.log("Is Pushing: " + player.isPushing);
   });
 
   // Handle collision between the player and danger entities (game over)
@@ -84,55 +126,6 @@ export function handleCollisions(player, scoreLabel, maps, level) {
     go("lose", { score: scoreLabel.value });
   });
 
-  /*
-  // OPEN AI VERSION (DONT DELTE):
-  Handle collision between player and next-level objects (advance level)
-  onCollideUpdate("player", "next-level", async () => {
-    if (mapGenerationInProgress) return; // Prevent multiple API calls
-
-    mapGenerationInProgress = true; // Set flag to true to indicate map generation is in progress
-
-    console.log("Collided with next-level object, generating new map...");
-
-    const openAIMap = await generateMap();
-    console.log("Generated OpenAI map data:", openAIMap);
-
-    maps.push(parseMapData(openAIMap));
-    console.log(maps);
-
-    // Go to the next level
-    go("game", { level: maps.length - 1, score: scoreLabel.value, maps });
-
-    mapGenerationInProgress = false; // Reset flag after map generation is complete
-  });*/
-
-  // Alternative function to handle collision between player and next-level objects (advances level)
-  onCollideUpdate("player", "next-level", async () => {
-    if (mapGenerationInProgress) return; // Prevent multiple map generations
-
-    mapGenerationInProgress = true; // Set flag to indicate map generation is in progress
-
-    console.log("Collided with next-level object, generating new map...");
-
-    try {
-      // Generate a new dungeon using the local function (returns an array)
-      const newDungeonMap = generateDungeon(exitPos); // Expected to return an array of strings
-      console.log("Generated local dungeon map:", newDungeonMap);
-
-      // Directly use the generated map without parsing
-      maps.push(newDungeonMap);
-      console.log("All maps:", maps);
-
-      // Advance to the next level
-      //
-
-      go("game", { level: maps.length - 1, score: scoreLabel.value, maps });
-    } catch (error) {
-      console.error("Error generating the new dungeon map:", error);
-    } finally {
-      mapGenerationInProgress = false; // Reset flag after map generation is complete
-    }
-  });
   // Handle collision between explosion and skeletor (destroy skeletor, increase score)
   let canAttack = true;
 

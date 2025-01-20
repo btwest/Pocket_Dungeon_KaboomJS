@@ -3,19 +3,33 @@ export function levelConfiguration() {
     tileWidth: 48,
     tileHeight: 48,
     tiles: {
-      t: () => [sprite("top-wall"), area(), body({ isStatic: true }), "wall"],
+      t: () => [
+        sprite("top-wall"),
+        area(),
+        body({ isStatic: true }),
+        scale(3),
+        "wall",
+      ],
       b: () => [
         sprite("bottom-wall"),
         area(),
         body({ isStatic: true }),
+        scale(3),
         "wall",
         "side-wall",
       ],
-      l: () => [sprite("left-wall"), area(), body({ isStatic: true }), "wall"],
+      l: () => [
+        sprite("left-wall"),
+        area(),
+        body({ isStatic: true }),
+        scale(3),
+        "wall",
+      ],
       r: () => [
         sprite("right-wall"),
         area(),
         body({ isStatic: true }),
+        scale(3),
         "wall",
         "side-wall",
       ],
@@ -23,24 +37,58 @@ export function levelConfiguration() {
         sprite("top-left-wall"),
         area(),
         body({ isStatic: true }),
+        scale(3),
         "wall",
       ],
       x: () => [
         sprite("top-right-wall"),
         area(),
         body({ isStatic: true }),
+        scale(3),
         "wall",
       ],
       y: () => [
         sprite("bottom-left-wall"),
         area(),
         body({ isStatic: true }),
+        scale(3),
         "wall",
       ],
       z: () => [
         sprite("bottom-right-wall"),
         area(),
         body({ isStatic: true }),
+        scale(3),
+        "wall",
+      ],
+      "~": () => [
+        sprite("top-right-exit"),
+        area(),
+        body({ isStatic: true }),
+        scale(3),
+        "wall",
+      ],
+      "`": () => [
+        sprite("top-left-exit"),
+        area(),
+        body({ isStatic: true }),
+        scale(3),
+        "wall",
+      ],
+      q: () => [
+        sprite("bottom-right-exit"),
+        area(),
+        body({ isStatic: true }),
+        scale(3),
+
+        "wall",
+      ],
+      a: () => [
+        sprite("bottom-left-exit"),
+        area(),
+        body({ isStatic: true }),
+        scale(3),
+
         "wall",
       ],
       "%": () => [
@@ -61,7 +109,7 @@ export function levelConfiguration() {
         "side-wall",
         rotate(90),
       ],
-      "`": () => [
+      f: () => [
         sprite("lantern-animation", { anim: "flicker" }),
         area(),
         anchor("topright"),

@@ -1,177 +1,205 @@
-import { updateStart, updateExit } from "./main.js";
+import { updateStart, updateStartingRoom } from "./main.js";
 
-export function generateDungeon(exitPos) {
-  const rows = 8;
-  const cols = 10;
-
-  // Initialize empty map with walls
-  const map = Array(rows)
-    .fill()
-    .map((_, row) =>
-      Array(cols)
-        .fill(" ")
-        .map((_, col) => {
-          if (row === 0 && col === 0) return "w"; // Top-left
-          if (row === 0 && col === cols - 1) return "x"; // Top-right
-          if (row === rows - 1 && col === 0) return "y"; // Bottom-left
-          if (row === rows - 1 && col === cols - 1) return "z"; // Bottom-right
-          if (row === 0) return "t"; // Top wall
-          if (row === rows - 1) return "b"; // Bottom wall
-          if (col === 0) return "l"; // Left wall
-          if (col === cols - 1) return "r"; // Right wall
-          return " ";
-        })
-    );
-
-  // Ensure exitPos is correctly defined
-  if (!exitPos) {
-    console.log("exitPos is undefined, initializing it.");
-    exitPos = { row: 0, col: 6 }; // Default position if undefined
-  }
-
-  // Place player start position relative to exitPos
-  let playerStart = { row: exitPos.row, col: exitPos.col };
-
-  // Adjust player start position based on the exit's direction
-  if (exitPos.row === 0) {
-    // Exit is at the top
-    playerStart.row = rows - 2; // Player starts at the bottom row
-  } else if (exitPos.row === rows - 1) {
-    // Exit is at the bottom
-    playerStart.row = 1; // Player starts at the top row
-  } else if (exitPos.col === 0) {
-    // Exit is on the left
-    playerStart.col = cols - 2; // Player starts on the right
-  } else if (exitPos.col === cols - 1) {
-    // Exit is on the right
-    playerStart.col = 1; // Player starts on the left
-  }
-
-  // Update player start position
-  updateStart({ row: playerStart.row, col: playerStart.col });
-
-  // Place exit doors based on wall types
-  const exitDoors = {
-    top: "e", // Top exit door
-    left: "s", // Left exit door
-    right: "g", // Right exit door
-    bottom: "d", // Bottom exit door
+// Room creation function
+function makeChamber(position) {
+  return {
+    row: position.row,
+    col: position.col,
+    exits: [], // Exits will be determined later
+    type: "Empty", // Default room type
+    layout: [
+      "          ",
+      "          ",
+      "          ",
+      "          ",
+      "          ",
+      "          ",
+      "          ",
+      "          ",
+    ],
   };
-
-  // Place entrance doors based on player start position
-  const entranceDoors = {
-    top: "^", // Top entrance door
-    left: "(", // Left entrance door
-    right: ")", // Right entrance door
-    bottom: "-", // Bottom entrance door
-  };
-
-  // Determine the direction of the exit and place the corresponding entrance door
-  if (exitPos.row === 0) {
-    // Exit is at the top, place entrance on the bottom
-    map[rows - 1][exitPos.col] = entranceDoors.bottom; // Place entrance door on bottom wall
-  } else if (exitPos.row === rows - 1) {
-    // Exit is at the bottom, place entrance on the top
-    map[0][exitPos.col] = entranceDoors.top; // Place entrance door on top wall
-  } else if (exitPos.col === 0) {
-    // Exit is on the left, place entrance on the right
-    map[exitPos.row][cols - 1] = entranceDoors.right; // Place entrance door on right wall
-  } else if (exitPos.col === cols - 1) {
-    // Exit is on the right, place entrance on the left
-    map[exitPos.row][0] = entranceDoors.left; // Place entrance door on left wall
-  }
-
-  // Randomize the perimeter order for exit placement
-  const perimeter = [
-    ...Array(cols)
-      .fill(0)
-      .map((_, i) => ({ row: 0, col: i })), // Top wall
-    ...Array(cols)
-      .fill(0)
-      .map((_, i) => ({ row: rows - 1, col: i })), // Bottom wall
-    ...Array(rows)
-      .fill(0)
-      .map((_, i) => ({ row: i, col: 0 })), // Left wall
-    ...Array(rows)
-      .fill(0)
-      .map((_, i) => ({ row: i, col: cols - 1 })), // Right wall
-  ];
-
-  // Randomize the perimeter order
-  const shuffledPerimeter = perimeter.sort(() => Math.random() - 0.5);
-
-  // Loop through the perimeter and place exit doors
-  for (let i = 0; i < shuffledPerimeter.length; i++) {
-    const { row, col } = shuffledPerimeter[i];
-
-    if (
-      !["^", "$", "{", "w", "x", "y", "z", "%", "@", "`", "&"].includes(
-        map[row][col]
-      ) // Ensure no door or lantern is replaced
-    ) {
-      if (map[row][col] === "t") {
-        map[row][col] = exitDoors.top; // Top wall gets top exit door
-        updateExit({ row: row, col: col });
-      } else if (map[row][col] === "l") {
-        map[row][col] = exitDoors.left; // Left wall gets left exit door
-        updateExit({ row: row, col: col });
-      } else if (map[row][col] === "r") {
-        map[row][col] = exitDoors.right; // Right wall gets right exit door
-        updateExit({ row: row, col: col });
-      } else if (map[row][col] === "b") {
-        map[row][col] = exitDoors.bottom; // Bottom wall gets bottom exit door
-        updateExit({ row: row, col: col });
-      }
-
-      break; // Exit once an exit door has been placed
-    }
-  }
-
-  // Place enemies
-  const enemyCount = Math.floor(Math.random() * 4) + 1; // 1-4 enemies
-  for (let i = 0; i < enemyCount; i++) {
-    let r, c;
-    do {
-      r = Math.floor(Math.random() * rows);
-      c = Math.floor(Math.random() * cols);
-    } while (
-      map[r][c] !== " " ||
-      (Math.abs(r - playerStart.row) <= 1 && Math.abs(c - playerStart.col) <= 1)
-    );
-    map[r][c] = Math.random() < 0.5 ? "*" : "!";
-  }
-
-  // Place lanterns
-  const maxLanterns = Math.floor(Math.random() * 8) + 1; // Random number of lanterns between 1 and 8
-  let lanternsPlaced = 0;
-
-  // Loop through the perimeter and place lanterns
-  for (let i = 0; i < shuffledPerimeter.length; i++) {
-    if (lanternsPlaced >= maxLanterns) break;
-
-    const { row, col } = shuffledPerimeter[i];
-
-    // Only place a lantern if it's not a door, corner, or already a lantern
-    if (
-      !["^", "$", "{", "w", "x", "y", "z"].includes(map[row][col]) &&
-      !["%", "@", "`", "&"].includes(map[row][col])
-    ) {
-      // Place lantern based on wall type
-      if (map[row][col] === "t") {
-        map[row][col] = "%"; // Top lantern
-      } else if (map[row][col] === "b") {
-        map[row][col] = "@"; // Bottom lantern
-      } else if (map[row][col] === "l") {
-        map[row][col] = "`"; // Left lantern
-      } else if (map[row][col] === "r") {
-        map[row][col] = "&"; // Right lantern
-      }
-      lanternsPlaced++;
-    }
-  }
-
-  // Convert map to array of strings
-  return map.map((row) => row.join(""));
 }
 
-console.log(generateDungeon());
+function updatePlayerStart(entrance) {
+  // Room dimensions in tiles
+  const roomWidthTiles = 10; // 10 tiles wide
+  const roomHeightTiles = 8; // 8 tiles tall
+
+  // Tile size in pixels
+  const tileSize = 48; // 48x48 pixels per tile
+
+  // Calculate the center tile of the entrance room
+  const centerTileX = Math.floor(roomWidthTiles / 2); // Center column (5th tile in a 0-indexed array)
+  const centerTileY = Math.floor(roomHeightTiles / 2); // Center row (4th tile in a 0-indexed array)
+
+  // Convert the tile position to world pixel coordinates
+  const startX =
+    entrance.col * roomWidthTiles * tileSize + centerTileX * tileSize;
+  const startY =
+    entrance.row * roomHeightTiles * tileSize + centerTileY * tileSize;
+
+  // Set the player's starting position
+  updateStart({ row: startX, col: startY });
+
+  console.log(`Player start position set to: (${startX}, ${startY})`);
+}
+
+// Function to map room exits to arrow symbols
+function mapRoomToArrows(room) {
+  const exits = room.exits || [];
+  let roomRepresentation = "";
+
+  // Add corresponding arrows for each exit direction
+  if (exits.includes("w")) roomRepresentation += "←";
+  if (exits.includes("n")) roomRepresentation += "↑";
+  if (exits.includes("s")) roomRepresentation += "↓";
+  if (exits.includes("e")) roomRepresentation += "→";
+
+  // Return the room's arrow representation (if no exits, return a space)
+  return roomRepresentation || " ";
+}
+// Function to map room types to their symbols (Entrance = E, Boss = B, or exits as arrows)
+function mapRoomToSymbol(room) {
+  if (!room) return "X"; // Null room
+  if (room.type === "Entrance") return "E"; // Entrance
+  if (room.type === "Boss") return "B"; // Boss chamber
+  return mapRoomToArrows(room); // Use arrow symbols for rooms with exits
+}
+// Function to print the dungeon layout
+function printDungeon(grid) {
+  console.log("Dungeon Layout:");
+  grid.forEach((row) => {
+    console.log(
+      row
+        .map((room) => mapRoomToSymbol(room).padEnd(3)) // Format for consistent width
+        .join("") // Join all rooms into a single string per row
+    );
+  });
+}
+
+function makePath(grid, entrance, boss) {
+  let currentRow = entrance.row;
+  let currentCol = entrance.col;
+  let targetRow = boss.row;
+  let targetCol = boss.col;
+
+  // While current position is not the same as the target position, create rooms
+  while (currentRow !== targetRow || currentCol !== targetCol) {
+    // Create a room at the current position if it's empty
+    if (!grid[currentRow][currentCol]) {
+      grid[currentRow][currentCol] = makeChamber({
+        row: currentRow,
+        col: currentCol,
+        type: "Normal",
+      });
+    }
+
+    // Determine the direction of movement and add exits to the current room
+    if (currentRow !== targetRow) {
+      if (currentRow < targetRow) {
+        // Moving down, add a 's' (south) exit to the current room
+        grid[currentRow][currentCol].exits.push("s");
+        // Add a 'n' (north) exit to the room below
+        if (!grid[currentRow + 1][currentCol]) {
+          grid[currentRow + 1][currentCol] = makeChamber({
+            row: currentRow + 1,
+            col: currentCol,
+            type: "Normal",
+          });
+        }
+        grid[currentRow + 1][currentCol].exits.push("n");
+        currentRow += 1;
+      } else {
+        // Moving up, add a 'n' (north) exit to the current room
+        grid[currentRow][currentCol].exits.push("n");
+        // Add a 's' (south) exit to the room above
+        if (!grid[currentRow - 1][currentCol]) {
+          grid[currentRow - 1][currentCol] = makeChamber({
+            row: currentRow - 1,
+            col: currentCol,
+            type: "Normal",
+          });
+        }
+        grid[currentRow - 1][currentCol].exits.push("s");
+        currentRow -= 1;
+      }
+    } else if (currentCol !== targetCol) {
+      if (currentCol < targetCol) {
+        // Moving right, add a 'e' (east) exit to the current room
+        grid[currentRow][currentCol].exits.push("e");
+        // Add a 'w' (west) exit to the room on the right
+        if (!grid[currentRow][currentCol + 1]) {
+          grid[currentRow][currentCol + 1] = makeChamber({
+            row: currentRow,
+            col: currentCol + 1,
+            type: "Normal",
+          });
+        }
+        grid[currentRow][currentCol + 1].exits.push("w");
+        currentCol += 1;
+      } else {
+        // Moving left, add a 'w' (west) exit to the current room
+        grid[currentRow][currentCol].exits.push("w");
+        // Add a 'e' (east) exit to the room on the left
+        if (!grid[currentRow][currentCol - 1]) {
+          grid[currentRow][currentCol - 1] = makeChamber({
+            row: currentRow,
+            col: currentCol - 1,
+            type: "Normal",
+          });
+        }
+        grid[currentRow][currentCol - 1].exits.push("e");
+        currentCol -= 1;
+      }
+    }
+
+    // Ensure we don't go out of bounds of the 8x8 grid
+    currentRow = Math.max(0, Math.min(grid.length - 1, currentRow));
+    currentCol = Math.max(0, Math.min(grid[0].length - 1, currentCol));
+  }
+}
+
+// Function to place entrance and boss rooms (simplified version)
+function placeEntranceAndBoss(grid) {
+  // Place entrance in the bottom row at a random column
+  //const entrance = { row: 7, col: 3 }; //hard-code entrance
+
+  const entrance = {
+    row: Math.floor(Math.random() * 8), // Random row between 0 and 7
+    col: Math.floor(Math.random() * 8), // Random column between 0 and 7
+  };
+
+  const boss = {
+    row: Math.floor(Math.random() * 8), // Random row between 0 and 7
+    col: Math.floor(Math.random() * 8), // Random column between 0 and 7
+  };
+
+  grid[entrance.row][entrance.col] = makeChamber(entrance);
+  grid[entrance.row][entrance.col].type = "Entrance"; // Mark as entrance
+
+  updatePlayerStart(entrance);
+  updateStartingRoom(entrance);
+
+  grid[boss.row][boss.col] = makeChamber(boss);
+  grid[boss.row][boss.col].type = "Boss"; // Mark as boss
+
+  return { entrance, boss };
+}
+
+// Function to generate the dungeon grid
+export function makeDungeonGrid() {
+  const gridSize = 8; // 8x8 grid
+  // Initialize the grid with null
+  const dungeonGrid = Array.from({ length: gridSize }, () =>
+    Array(gridSize).fill(null)
+  );
+
+  // Generate and place entrance and boss rooms
+  const { entrance, boss } = placeEntranceAndBoss(dungeonGrid);
+
+  // Create connecting rooms between the entrance and the boss
+  makePath(dungeonGrid, entrance, boss);
+  printDungeon(dungeonGrid);
+
+  return dungeonGrid;
+}

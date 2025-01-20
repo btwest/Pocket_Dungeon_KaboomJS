@@ -5,7 +5,8 @@ export function updateAnimations(
   isPushing,
   isMoving
 ) {
-  console.log(player.curAnim());
+  //debug.log(player.curAnim());
+  //console.log(player.curAnim());
   //console.log(player.curAnim());
 
   function setSprite(player, spriteName) {
@@ -19,35 +20,103 @@ export function updateAnimations(
   }
   const x = vector.x;
   const y = vector.y;
-  //console.log("x: " + x + " y: " + y);
+
   //Determine isPushing if player is moving and there is wall infront of player isPushing = true
   if (isPushing) {
     // Handle push animations
     switch (true) {
-      case vec2Equals(player.dir, vec2(0, -1)):
+      case vec2Equals(vector, vec2(0, -1)):
         setSprite(player, "link-push");
         if (player.curAnim() !== "pushup") {
           player.play("pushup");
         }
         break;
-      case vec2Equals(player.dir, vec2(0, 1)):
+      case vec2Equals(vector, vec2(0, 1)):
         setSprite(player, "link-push");
         if (player.curAnim() !== "pushdown") {
           player.play("pushdown");
         }
         break;
-      case vec2Equals(player.dir, vec2(-1, 0)):
+      case vec2Equals(vector, vec2(-1, 0)):
         player.flipX = false;
         setSprite(player, "link-push");
         if (player.curAnim() !== "pushside") {
           player.play("pushside");
         }
         break;
-      case vec2Equals(player.dir, vec2(1, 0)):
+      case vec2Equals(vector, vec2(1, 0)):
         player.flipX = true;
         setSprite(player, "link-push");
         if (player.curAnim() !== "pushside") {
           player.play("pushside");
+        }
+        break;
+      case vec2Equals(vector, vec2(-1, -1)):
+        // Pushing Up-Left
+        if (player.curAnim() === "pushside") {
+          player.flipX = false;
+          setSprite(player, "link-push");
+          if (player.curAnim() !== "pushside") {
+            player.play("pushside");
+          }
+        } else if (player.curAnim() === "pushup") {
+          setSprite(player, "link-push");
+          if (player.curAnim() !== "pushup") {
+            player.play("pushup");
+          }
+        } else {
+          debug.log("curAnim not Found");
+          setSprite(player, "link-push");
+          if (player.curAnim() !== "pushup") {
+            player.play("pushup");
+          }
+        }
+        break;
+      case vec2Equals(vector, vec2(1, -1)):
+        // Pushing Up-Right
+        if (player.curAnim() === "pushside") {
+          player.flipX = true;
+          setSprite(player, "link-push");
+          if (player.curAnim() !== "pushside") {
+            player.play("pushside");
+          }
+        } else {
+          setSprite(player, "link-push");
+          if (player.curAnim() !== "pushup") {
+            player.play("pushup");
+          }
+        }
+        break;
+
+      case vec2Equals(vector, vec2(-1, 1)):
+        // Pushing Down-Left
+        if (player.curAnim() === "pushside") {
+          player.flipX = false;
+          setSprite(player, "link-push");
+          if (player.curAnim() !== "pushside") {
+            player.play("pushside");
+          }
+        } else {
+          setSprite(player, "link-push");
+          if (player.curAnim() !== "pushdown") {
+            player.play("pushdown");
+          }
+        }
+        break;
+
+      case vec2Equals(vector, vec2(1, 1)):
+        // Pushing Down-Right
+        if (player.curAnim() === "pushside") {
+          player.flipX = true;
+          setSprite(player, "link-push");
+          if (player.curAnim() !== "pushside") {
+            player.play("pushside");
+          }
+        } else {
+          setSprite(player, "link-push");
+          if (player.curAnim() !== "pushdown") {
+            player.play("pushdown");
+          }
         }
         break;
     }
@@ -189,7 +258,7 @@ export function updateAnimations(
         break;
       default:
         // No movement
-        player.stop();
+        //player.stop();
         //Show Idle sprite
         switch (true) {
           case vec2Equals(player.dir, vec2(0, -1)):

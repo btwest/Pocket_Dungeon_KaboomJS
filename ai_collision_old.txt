@@ -1,0 +1,50 @@
+  /*
+  // OPEN AI VERSION (DONT DELTE):
+  Handle collision between player and next-level objects (advance level)
+  onCollideUpdate("player", "next-level", async () => {
+    if (mapGenerationInProgress) return; // Prevent multiple API calls
+
+    mapGenerationInProgress = true; // Set flag to true to indicate map generation is in progress
+
+   
+
+    const openAIMap = await generateMap();
+   
+
+    maps.push(parseMapData(openAIMap));
+   
+
+    // Go to the next level
+    go("game", { level: maps.length - 1, score: scoreLabel.value, maps });
+
+    mapGenerationInProgress = false; // Reset flag after map generation is complete
+  });*/
+
+  /*
+  // Alternative function to handle collision between player and next-level objects (advances level)
+  onCollideUpdate("player", "next-level", async () => {
+    if (mapGenerationInProgress) return; // Prevent multiple map generations
+
+    mapGenerationInProgress = true; // Set flag to indicate map generation is in progress
+
+    c
+
+    try {
+      // Generate a new dungeon using the local function (returns an array)
+      const newDungeonMap = generateRoom(e); // Expected to return an array of strings
+      
+
+      // Directly use the generated map without parsing
+      maps.push(newDungeonMap);
+      
+
+      // Advance to the next level
+      //
+
+      go("game", { level: maps.length - 1, score: scoreLabel.value, maps });
+    } catch (error) {
+      console.error("Error generating the new dungeon map:", error);
+    } finally {
+      mapGenerationInProgress = false; // Reset flag after map generation is complete
+    }
+  }); */

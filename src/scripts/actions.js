@@ -38,7 +38,6 @@ export async function handleAction(player, action) {
   }
   switch (action) {
     case "fireblast":
-      console.log("spawning kaboom");
       spawnKaboom(player.pos.add(player.dir.scale(48)));
       break;
     case "sword":
