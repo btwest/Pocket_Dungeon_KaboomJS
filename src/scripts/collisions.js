@@ -137,6 +137,8 @@ export function handleCollisions(player, scoreLabel, maps, level) {
   // Handle collision between explosion and skeletor (destroy skeletor, increase score)
   let canAttack = true;
 
+  const unkillables = ["slicer", ""];
+
   onCollideUpdate("attack", "dangerous", async (attack, enemy) => {
     if (!canAttack) return; // Ignore collisions during cooldown
 
@@ -150,8 +152,13 @@ export function handleCollisions(player, scoreLabel, maps, level) {
     wait(1, () => {
       destroy(attack);
     });
+    // Returns if striking a pitfall or a slicer
+    if (unkillables.includes(enemy.sprite) || enemy.tags.includes("pitfall")) {
+      return;
+    }
 
     enemy.hurt(1);
+
     //TODO: bounce back
 
     // Calculate bounce direction
@@ -162,8 +169,6 @@ export function handleCollisions(player, scoreLabel, maps, level) {
 
     // Apply a small push force
     //await enemy.move(direction, 20);
-
-    console.log("Enemy Health: " + enemy.hp());
 
     if (enemy.hp() <= 0) {
       destroy(enemy);

@@ -231,9 +231,7 @@ export function levelConfiguration() {
         "dangerous",
         area({ scale: 0.8, offset: vec2(6, 6) }),
         z(2),
-
         body(),
-        health(2),
         { dir: -1 }, //initial movement direction
       ],
       "!": () => [

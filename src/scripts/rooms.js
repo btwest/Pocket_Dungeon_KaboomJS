@@ -189,7 +189,17 @@ export const nsRooms = {
     "l       *r",
     "l        r",
     "l        r",
-    "l       *r",
+    "l*       r",
+    "lkmo  kmor",
+    "ybba  qbbz",
+  ],
+  nsSlicers: [
+    "wtt`  ~ttx",
+    "lkmo  kmor",
+    "l*      *r",
+    "l        r",
+    "l        r",
+    "l   **   r",
     "lkmo  kmor",
     "ybba  qbbz",
   ],
@@ -273,7 +283,7 @@ export const ewRooms = {
     "l*       r",
     "` kmmmmo ~",
     "       !  ",
-    "  !      ",
+    "  !       ",
     "a kmmmmo q",
     "l       *r",
     "ybbbbbbbbz",
@@ -283,7 +293,7 @@ export const ewRooms = {
     "lkmo  kmor",
     "`       *~",
     "  kmmo    ",
-    "      ko   ",
+    "      ko  ",
     "a*       q",
     "lkmmmmmmor",
     "ybbbbbbbbz",
@@ -300,7 +310,7 @@ export const ewRooms = {
   ],
   ew4: [
     "wttttttttx",
-    "l  !     r",
+    "lmmmmmmmmr",
     "`p      p~",
     "  p    p  ",
     "   k  o   ",
@@ -330,6 +340,39 @@ export const swRooms = {
     "a*      *r",
     "lkmo  kmor",
     "ybba  qbbz",
+  ],
+};
+
+export const enRooms = {
+  en1: [
+    "wtt`  ~ttx",
+    "l       *r",
+    "l   kmmmo~",
+    "l     !   ",
+    "l         ",
+    "l        q",
+    "lkmmmmmmor",
+    "ybbbbbbbbz",
+  ],
+  en2: [
+    "wtt`  ~ttx",
+    "lkmo  kmor",
+    "l        ~",
+    "l      !  ",
+    "l      !  ",
+    "l        q",
+    "lkmo  kmor",
+    "ybbbbbbbbz",
+  ],
+  en3: [
+    "wtt`  ~ttx",
+    "lko    kor",
+    "l*      *~",
+    "l         ",
+    "l         ",
+    "lkmmmmmmoq",
+    "l        r",
+    "ybbbbbbbbz",
   ],
 };
 
@@ -378,13 +421,13 @@ export const bossRooms = {
 
 const testRoom = {
   test: [
-    "wttttttttx",
-    "l  !     r",
-    "`p      p~",
-    "  p    p  ",
-    "   k  o   ",
-    "a       *q",
-    "l*       r",
+    "wtt`  ~ttx",
+    "lko    kor",
+    "l*      *~",
+    "l         ",
+    "l         ",
+    "lkmmmmmmoq",
+    "l        r",
     "ybbbbbbbbz",
   ],
 };
@@ -431,7 +474,7 @@ export function mapChamberToLayout(room) {
     case "ns":
       return fetchRandomChamber(nsRooms);
     case "en":
-      return rooms.neExit;
+      return fetchRandomChamber(enRooms);
     case "nw":
       return rooms.nwExit;
     case "es": // Previously "se"
